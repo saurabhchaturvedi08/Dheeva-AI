@@ -1,140 +1,90 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from 'react-native';
-import { FileText, ChevronDown, X } from 'lucide-react-native';
-import { FileItem } from './FileItem';
+'use client'
+
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FileText, ChevronDown, X } from 'lucide-react'
+import { FileItem } from './FileItem'
 
 interface ChatHeaderProps {
-  selectedFile: any;
-  files: any[];
-  onSelectFile: (file: any) => void;
+  selectedFile: any
+  files: any[]
+  onSelectFile: (file: any) => void
 }
 
 export function ChatHeader({ selectedFile, files, onSelectFile }: ChatHeaderProps) {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   return (
-    <View style={styles.header}>
-      <View style={styles.fileSelector}>
-        <TouchableOpacity 
-          style={styles.fileSelectorButton}
-          onPress={() => setIsModalVisible(true)}
+    <div className="bg-white border-b border-slate-200 p-4">
+      <div className="relative">
+        <button
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors"
         >
-          <View style={styles.selectedFile}>
-            <View style={styles.fileIconContainer}>
-              <FileText size={16} color="#6366f1" />
-            </View>
-            <Text style={styles.fileName} numberOfLines={1}>
-              {selectedFile?.name || 'Select a file'}
-            </Text>
-          </View>
-          <ChevronDown size={20} color="#64748b" />
-        </TouchableOpacity>
-      </View>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+              <FileText className="w-5 h-5 text-indigo-600" />
+            </div>
+            <div className="text-left">
+              <p className="font-medium text-slate-900 truncate max-w-xs">
+                {selectedFile?.name || 'Select a file'}
+              </p>
+              <p className="text-sm text-slate-600">
+                {selectedFile ? `${selectedFile.size} • ${selectedFile.domain}` : 'Choose a document to chat with'}
+              </p>
+            </div>
+          </div>
+          <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${
+            isDropdownOpen ? 'rotate-180' : ''
+          }`} />
+        </button>
 
-      <Modal
-        visible={isModalVisible}
-        animationType="slide"
-        transparent={true}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select a File</Text>
-              <TouchableOpacity 
-                style={styles.closeButton}
-                onPress={() => setIsModalVisible(false)}
+        <AnimatePresence>
+          {isDropdownOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-10"
+                onClick={() => setIsDropdownOpen(false)}
+              />
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-80 overflow-y-auto"
               >
-                <X size={24} color="#0f172a" />
-              </TouchableOpacity>
-            </View>
-            
-            <FlatList
-              data={files}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    onSelectFile(item);
-                    setIsModalVisible(false);
-                  }}
-                >
-                  <FileItem file={item} />
-                </TouchableOpacity>
-              )}
-              contentContainerStyle={styles.filesList}
-            />
-          </View>
-        </View>
-      </Modal>
-    </View>
-  );
+                <div className="p-2">
+                  <div className="flex items-center justify-between p-3 border-b border-slate-100">
+                    <h3 className="font-semibold text-slate-900">Select a File</h3>
+                    <button
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="p-1 hover:bg-slate-100 rounded"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="space-y-2 p-2">
+                    {files.map((file) => (
+                      <button
+                        key={file.id}
+                        onClick={() => {
+                          onSelectFile(file)
+                          setIsDropdownOpen(false)
+                        }}
+                        className="w-full text-left"
+                      >
+                        <FileItem file={file} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  )
 }
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-    padding: 16,
-  },
-  fileSelector: {
-    backgroundColor: '#f1f5f9',
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  fileSelectorButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 12,
-  },
-  selectedFile: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  fileIconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#e0e7ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  fileName: {
-    fontSize: 16,
-    color: '#0f172a',
-    flex: 1,
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    maxHeight: '80%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0f172a',
-  },
-  closeButton: {
-    padding: 4,
-  },
-  filesList: {
-    padding: 16,
-  },
-});

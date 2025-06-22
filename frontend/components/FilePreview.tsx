@@ -1,115 +1,106 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import { FileText, FileImage, FileAudio, FileVideo } from 'lucide-react-native';
+'use client'
+
+import { FileText, FileImage, FileAudio, FileVideo, Download, ExternalLink } from 'lucide-react'
 
 interface FilePreviewProps {
   file: {
-    id: string;
-    name: string;
-    type: string;
-    size: string;
-  };
+    id: string
+    name: string
+    type: string
+    size: string
+  }
 }
 
 export function FilePreview({ file }: FilePreviewProps) {
   const renderPreview = () => {
     switch (file.type) {
       case 'image':
-        // In a real app, this would display the actual image
         return (
-          <View style={styles.imagePreview}>
-            <FileImage size={32} color="#3b82f6" />
-            <Text style={styles.previewText}>Image Preview</Text>
-          </View>
-        );
+          <div className="h-full bg-gradient-to-br from-blue-50 to-blue-100 flex flex-col items-center justify-center">
+            <div className="w-16 h-16 bg-blue-200 rounded-2xl flex items-center justify-center mb-4">
+              <FileImage className="w-8 h-8 text-blue-600" />
+            </div>
+            <h3 className="font-semibold text-blue-900 mb-2">Image Preview</h3>
+            <p className="text-sm text-blue-700 text-center px-4">
+              In a real implementation, the actual image would be displayed here
+            </p>
+          </div>
+        )
       case 'pdf':
         return (
-          <View style={styles.pdfPreview}>
-            <FileText size={32} color="#ef4444" />
-            <Text style={styles.previewText}>PDF Document</Text>
-          </View>
-        );
+          <div className="h-full bg-gradient-to-br from-red-50 to-red-100 flex flex-col items-center justify-center">
+            <div className="w-16 h-16 bg-red-200 rounded-2xl flex items-center justify-center mb-4">
+              <FileText className="w-8 h-8 text-red-600" />
+            </div>
+            <h3 className="font-semibold text-red-900 mb-2">PDF Document</h3>
+            <p className="text-sm text-red-700 text-center px-4">
+              PDF viewer would be integrated here for document preview
+            </p>
+          </div>
+        )
       case 'audio':
         return (
-          <View style={styles.audioPreview}>
-            <FileAudio size={32} color="#10b981" />
-            <Text style={styles.previewText}>Audio File</Text>
-          </View>
-        );
+          <div className="h-full bg-gradient-to-br from-green-50 to-green-100 flex flex-col items-center justify-center">
+            <div className="w-16 h-16 bg-green-200 rounded-2xl flex items-center justify-center mb-4">
+              <FileAudio className="w-8 h-8 text-green-600" />
+            </div>
+            <h3 className="font-semibold text-green-900 mb-2">Audio File</h3>
+            <p className="text-sm text-green-700 text-center px-4">
+              Audio player with waveform visualization would appear here
+            </p>
+          </div>
+        )
       case 'video':
         return (
-          <View style={styles.videoPreview}>
-            <FileVideo size={32} color="#f59e0b" />
-            <Text style={styles.previewText}>Video File</Text>
-          </View>
-        );
+          <div className="h-full bg-gradient-to-br from-yellow-50 to-yellow-100 flex flex-col items-center justify-center">
+            <div className="w-16 h-16 bg-yellow-200 rounded-2xl flex items-center justify-center mb-4">
+              <FileVideo className="w-8 h-8 text-yellow-600" />
+            </div>
+            <h3 className="font-semibold text-yellow-900 mb-2">Video File</h3>
+            <p className="text-sm text-yellow-700 text-center px-4">
+              Video player with controls would be embedded here
+            </p>
+          </div>
+        )
       default:
         return (
-          <View style={styles.defaultPreview}>
-            <FileText size={32} color="#6366f1" />
-            <Text style={styles.previewText}>File Preview</Text>
-          </View>
-        );
+          <div className="h-full bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col items-center justify-center">
+            <div className="w-16 h-16 bg-slate-200 rounded-2xl flex items-center justify-center mb-4">
+              <FileText className="w-8 h-8 text-slate-600" />
+            </div>
+            <h3 className="font-semibold text-slate-900 mb-2">File Preview</h3>
+            <p className="text-sm text-slate-700 text-center px-4">
+              Preview not available for this file type
+            </p>
+          </div>
+        )
     }
-  };
+  }
 
   return (
-    <View style={styles.container}>
-      {renderPreview()}
-    </View>
-  );
+    <div className="h-full flex flex-col">
+      {/* Preview Header */}
+      <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-white">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-medium text-slate-900 truncate" title={file.name}>
+            {file.name}
+          </h3>
+          <p className="text-sm text-slate-600">{file.size}</p>
+        </div>
+        <div className="flex items-center gap-2 ml-4">
+          <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors" title="Download">
+            <Download className="w-4 h-4 text-slate-600" />
+          </button>
+          <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors" title="Open in new tab">
+            <ExternalLink className="w-4 h-4 text-slate-600" />
+          </button>
+        </div>
+      </div>
+      
+      {/* Preview Content */}
+      <div className="flex-1">
+        {renderPreview()}
+      </div>
+    </div>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imagePreview: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#dbeafe',
-    width: '90%',
-    height: 80,
-    borderRadius: 8,
-  },
-  pdfPreview: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fee2e2',
-    width: '90%',
-    height: 80,
-    borderRadius: 8,
-  },
-  audioPreview: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#d1fae5',
-    width: '90%',
-    height: 80,
-    borderRadius: 8,
-  },
-  videoPreview: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fef3c7',
-    width: '90%',
-    height: 80,
-    borderRadius: 8,
-  },
-  defaultPreview: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#e0e7ff',
-    width: '90%',
-    height: 80,
-    borderRadius: 8,
-  },
-  previewText: {
-    marginTop: 8,
-    fontSize: 12,
-    fontWeight: '500',
-  },
-});

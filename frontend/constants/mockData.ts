@@ -65,7 +65,7 @@ export const MOCK_FILES = [
     domain: 'business',
     uploadDate: '2023-11-30T09:50:00Z',
   },
-];
+]
 
 export const MOCK_CHATS = {
   '1': [
@@ -122,4 +122,4 @@ export const MOCK_CHATS = {
       timestamp: '2023-09-09T09:15:30Z',
     },
   ],
-};
+}

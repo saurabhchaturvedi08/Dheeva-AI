@@ -1,86 +1,55 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+'use client'
+
+import { motion } from 'framer-motion'
+import { User, Bot } from 'lucide-react'
 
 interface Message {
-  id: string;
-  text: string;
-  sender: 'user' | 'ai';
-  timestamp: string;
+  id: string
+  text: string
+  sender: 'user' | 'ai'
+  timestamp: string
 }
 
 interface ChatBubbleProps {
-  message: Message;
+  message: Message
 }
 
 export function ChatBubble({ message }: ChatBubbleProps) {
-  const isUser = message.sender === 'user';
+  const isUser = message.sender === 'user'
   
   const formatTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
+    const date = new Date(timestamp)
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
 
   return (
-    <View style={[
-      styles.container,
-      isUser ? styles.userContainer : styles.aiContainer
-    ]}>
-      <View style={[
-        styles.bubble,
-        isUser ? styles.userBubble : styles.aiBubble
-      ]}>
-        <Text style={[
-          styles.messageText,
-          isUser ? styles.userText : styles.aiText
-        ]}>
-          {message.text}
-        </Text>
-      </View>
-      <Text style={styles.timestamp}>{formatTime(message.timestamp)}</Text>
-    </View>
-  );
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
+    >
+      {!isUser && (
+        <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+          <Bot className="w-4 h-4 text-white" />
+        </div>
+      )}
+      
+      <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-xs md:max-w-md lg:max-w-lg`}>
+        <div className={isUser ? 'chat-bubble-user' : 'chat-bubble-ai'}>
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+            {message.text}
+          </p>
+        </div>
+        <span className="text-xs text-slate-500 mt-1 px-2">
+          {formatTime(message.timestamp)}
+        </span>
+      </div>
+      
+      {isUser && (
+        <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center flex-shrink-0">
+          <User className="w-4 h-4 text-slate-600" />
+        </div>
+      )}
+    </motion.div>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-    maxWidth: '80%',
-  },
-  userContainer: {
-    alignSelf: 'flex-end',
-  },
-  aiContainer: {
-    alignSelf: 'flex-start',
-  },
-  bubble: {
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  userBubble: {
-    backgroundColor: '#6366f1',
-    borderBottomRightRadius: 4,
-  },
-  aiBubble: {
-    backgroundColor: '#fff',
-    borderBottomLeftRadius: 4,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  messageText: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  userText: {
-    color: '#fff',
-  },
-  aiText: {
-    color: '#0f172a',
-  },
-  timestamp: {
-    fontSize: 10,
-    color: '#94a3b8',
-    marginTop: 4,
-    marginHorizontal: 8,
-  },
-});
